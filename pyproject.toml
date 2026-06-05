@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llama-index-tools-daytona"
+version = "0.1.0"
+description = "LlamaIndex tool spec for executing Python/shell code inside a real, isolated Daytona sandbox."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Jivin", email = "jivin@daytona.dev" },
+]
+keywords = ["llama-index", "llamaindex", "daytona", "sandbox", "code-interpreter", "agent", "tools"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    # Verified against llama-index-core 0.14.22. Floor of 0.11 is where the
+    # BaseToolSpec / FunctionTool surface this package uses is stable.
+    "llama-index-core>=0.11",
+    # Verified against daytona 0.184.0; 0.149 is the documented smoke-test floor
+    # for the code_run/exec/create call shape in base.py. daytona is a pre-1.0
+    # (0.x) SDK, so under semver its 0.x MINOR releases may break that call shape;
+    # capped at <1.0 to avoid a routine SDK bump silently breaking installs. The
+    # call shape is validated only through 0.184 — bump the cap deliberately after
+    # re-running the smoke test on each new verified daytona release.
+    "daytona>=0.149,<1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/daytonaio/daytona"
+Repository = "https://github.com/daytonaio/daytona"
+
+# Ship ONLY the leaf package llama_index/tools/daytona as a PEP-420 namespace
+# package. There is NO __init__.py at llama_index/ or llama_index/tools/, so the
+# installed package merges with llama-index-core's llama_index namespace.
+[tool.hatch.build.targets.wheel]
+packages = ["llama_index"]
+only-include = ["llama_index/tools/daytona"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "llama_index/tools/daytona",
+    "README.md",
+    "LICENSE",
+    "pyproject.toml",
+]
